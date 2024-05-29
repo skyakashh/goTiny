@@ -11,3 +11,7 @@ type Url struct {
 type OriginalUrl struct {
 	Url string `json:"longurl,omitempty"`
 }
+
+type Response struct {
+	Url string `json:"shorturl"`
+}

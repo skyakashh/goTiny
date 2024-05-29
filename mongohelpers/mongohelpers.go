@@ -18,6 +18,8 @@ import (
 
 func CreateMovie(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
 	//w.Header().Set("Access-Control-Allow-Methods", "POST")
 	var str models.OriginalUrl
 	if err := json.NewDecoder(r.Body).Decode(&str); err != nil {
@@ -25,7 +27,9 @@ func CreateMovie(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	s := createShortUrl(str)
-	json.NewEncoder(w).Encode(s)
+	var res models.Response
+	res.Url = s.Url
+	json.NewEncoder(w).Encode(res)
 }
 
 func createShortUrl(str models.OriginalUrl) models.OriginalUrl {
@@ -45,6 +49,7 @@ func createShortUrl(str models.OriginalUrl) models.OriginalUrl {
 // fetch a url
 
 func GetLongURL(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
 	w.Header().Set("Content-Type", "application/json")
 
 	params := mux.Vars(r)
@@ -58,6 +63,8 @@ func GetLongURL(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "URL not found", http.StatusNotFound)
 		return
 	}
-
-	http.Redirect(w, r, urlMapping.LongUrl, http.StatusTemporaryRedirect)
+	var res models.OriginalUrl
+	res.Url = urlMapping.LongUrl
+	json.NewEncoder(w).Encode(res)
+	//http.Redirect(w, r, urlMapping.LongUrl, http.StatusTemporaryRedirect)
 }
